@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
-import "interface/ERC223Interface.sol";
-import "interface/ERC223ReceiverInterface.sol";
+import "./interface/ERC223Interface.sol";
+import "./interface/ERC223ReceiverInterface.sol";
 
 contract ERC223Bank is ERC223Receiver {
     
