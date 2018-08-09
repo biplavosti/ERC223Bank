@@ -5,24 +5,28 @@ import "./interface/ERC223ReceiverInterface.sol";
 
 contract ERC223Bank is ERC223Receiver {
     
+	event Deposit(address user, address tokenAddress, uint tokens);
+	event Withdraw(address user, address tokenAddress, uint tokens);
+	
     mapping(address => mapping(address => uint)) locker;
     
     function balance(address tokenAddress) public view returns (uint) {
         return (locker[msg.sender][tokenAddress]);
     }
     
-    function deposit(address user, uint tokenCount) private {
-        require(ERC223(msg.sender).balanceOf(user) >= tokenCount);
+    function deposit(address user, uint value) private {
+        require(ERC223(msg.sender).balanceOf(user) >= value);
         
-        locker[user][msg.sender] = tokenCount;
+		emit Deposit(user, msg.sender, value);
+        locker[user][msg.sender] += value;
     }
     
     function withdraw(address tokenAddress, uint value) public {
         require(locker[msg.sender][tokenAddress] >= value);
         
+		emit Withdraw(msg.sender, tokenAddress, value);
 		locker[msg.sender][tokenAddress] -= value;
-        ERC223 token = ERC223(tokenAddress);
-        token.transfer(msg.sender, value);
+        ERC223(tokenAddress).transfer(msg.sender, value);
     }
     
     function ERC223ReceiverFallBack(address _from, uint _value, bytes _data) external {
